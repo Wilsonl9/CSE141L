@@ -9,20 +9,17 @@ module top(
 // list of interconnecting wires/buses w/ respective bit widths 
   wire signed[7:0] bamt;	    // PC jump
   wire[7:0] PC;				    // program counter
-  wire[6:0] inst;			    // machine code
+  wire[8:0] inst;			    // machine code
   wire[7:0] dm_out,			    // data memory
             dm_in,			   
             dm_adr;
   wire[7:0] in_a,			    // alu inputs
             in_b,			   
 			rslt,               // alu output
-            do_a,	            // reg_file outputs
-			do_b;			   
+            do_a;	            // reg_file outputs
   wire[7:0] rf_din;	            // reg_file input
-  wire[2:0] op;	                // opcode
-  wire[1:0] ptr_a,			    // ref_file pointers
-            ptr_b,			   
-			ptr_w;
+  wire[4:0] op;	                // opcode
+  wire[3:0] ptr_a;			    // ref_file pointers
   wire      z;	                // alu zero flag
   logic     rf_we;              // reg_file write enable
   wire      ldr,			    // load mode (mem --> reg_file)

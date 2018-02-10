@@ -3,25 +3,44 @@
 import definitions::*;              // declares ALU opcodes 
 module alu (			         
   input             ci,			    // carry in
-  input       [2:0] op,			    // opcode
+  input       [3:0] op,			    // opcode
   input       [7:0] in_a,		    // operands in
-                    in_b,
-  output logic[7:0] rslt,		    // result out
+                    in_acc,
+  output logic[7:0] acc,		    // result out
   output logic      co,			    // carry out
-  output logic      z); 		    // zero flag, like ARM Z flag
+  output logic      z, 		    // zero flag, like ARM Z flag
+  output logic      neg);          // negative flag
   op_mne op_mnemonic;			    // type enum: used for convenient waveform viewing
 
   always_comb begin
-    co    = 1'b0;				    // defaults
-	rslt  = 8'b0;
-	z     = 1'b0;
     case(op)						// selective override one or more defaults
-      kLDR: rslt = in_a;		    // load reg_file from data_mem
-	  kACC: {co,rslt} = in_a+in_b+ci;  // add w/ carry in and out
-	  kACI: {co,rslt} = in_a-1+ci;	// decrement by 1 with carry in and out
-	  kBZR: z = !in_a;				// branch relative: if(in_a=0), set z flag=1
-	  kBZA: z = !in_a;				// branch absolute: same test in ALU
-	  kSTR: rslt = in_a;			// store in data_mem from reg_file
+	   kADD: begin
+		        {co,rslt} = in_acc + in_a + ci;  // add w/ carry in and out
+				  neg = (in_acc + in_a + ci)[7];
+				end
+      kSUB: begin
+		        {co,rslt} = in_acc + (!in_a + 1);
+				  neg = (in_acc + (!in_a + 1))[7];
+				end
+ 	   kSTR: acc = in_acc;			  // store in data_mem from reg_file
+	   kLDR: acc = in_a;		        // load reg_file from data_mem
+      kAND: acc = in_acc & in_a;  	  // AND, acc = acc & operand
+	   kXOR: acc = in_acc ^ in_a;	  // XOR, acc = acc ^ operand
+	   kMLD: acc = in_a;	           // loads from memory into acc
+	   kMST: acc = in_acc;	        // stores from acc into memory
+	   kLDI: acc = in_a;	           // load immediate into acc
+	   kSHL: {co,acc} = in_acc << in_a;	  // shifts the acc n times left
+	   kSHR: acc = in_acc >> in_a;	  // shifts the acc n times right
+	   kJMP: z = !in_a;	           // branch absolute: same test in ALU
+	   kBRN: neg = neg;	              // branch if neg bit is on
+	   kBRZ: z = !in_acc;           // branch relative: if(in_a=0), set z flag=1
+	   kNOT: acc = !in_acc;	        // NOT, acc = ~acc	 
+	   kCLR: begin
+		        co    = 1'b0;				    // defaults
+              rslt  = 8'b0;
+	           z     = 1'b0;
+	           neg = 1'b0;
+			   end
     endcase
   end
   assign  op_mnemonic = op_mne'(op);  // creates ALU opcode mnemonics in timing diagram
