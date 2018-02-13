@@ -21,7 +21,7 @@ package definitions;
 	 const logic [3:0]kCLR  = 4'b1111;	  // clears the alu bit flags
 
 // enum names will appear in timing diagram
-    typedef enum logic[2:0] {			  // mnemonic equivs of the above
+    typedef enum logic[3:0] {			  // mnemonic equivs of the above
         ADD, SUB, STR, LDR, AND, XOR,
 		  MLD, MST, LDI, SHL, SHR, JMP,
 		  BRN, BRZ, NOT, CLR // strictly for user convnience in timing diagram

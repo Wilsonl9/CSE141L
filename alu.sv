@@ -15,12 +15,12 @@ module alu (
   always_comb begin
     case(op)						// selective override one or more defaults
 	   kADD: begin
-		        {co,rslt} = in_acc + in_a + ci;  // add w/ carry in and out
-				  neg = (in_acc + in_a + ci)[7];
+		        {co,acc} = in_acc + in_a + ci;  // add w/ carry in and out
+				  neg = acc[7];
 				end
       kSUB: begin
-		        {co,rslt} = in_acc + (!in_a + 1);
-				  neg = (in_acc + (!in_a + 1))[7];
+		        {co,acc} = in_acc + (!in_a + 1);
+				  neg = acc[7];
 				end
  	   kSTR: acc = in_acc;			  // store in data_mem from reg_file
 	   kLDR: acc = in_a;		        // load reg_file from data_mem
@@ -37,7 +37,7 @@ module alu (
 	   kNOT: acc = !in_acc;	        // NOT, acc = ~acc	 
 	   kCLR: begin
 		        co    = 1'b0;				    // defaults
-              rslt  = 8'b0;
+              acc  = 8'b0;
 	           z     = 1'b0;
 	           neg = 1'b0;
 			   end
