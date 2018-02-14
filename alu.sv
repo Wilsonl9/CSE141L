@@ -12,15 +12,19 @@ module alu (
   output logic      neg);          // negative flag
   op_mne op_mnemonic;			    // type enum: used for convenient waveform viewing
 
+  logic[7:0] sum;
+  
   always_comb begin
     case(op)						// selective override one or more defaults
 	   kADD: begin
 		        {co,acc} = in_acc + in_a + ci;  // add w/ carry in and out
-				  neg = acc[7];
+              sum <= in_acc + in_a + ci;
+				  neg = sum[7];
 				end
       kSUB: begin
 		        {co,acc} = in_acc + (!in_a + 1);
-				  neg = acc[7];
+				  sum <= in_acc + (!in_a + 1);
+				  neg = sum[7];
 				end
  	   kSTR: acc = in_acc;			  // store in data_mem from reg_file
 	   kLDR: acc = in_a;		        // load reg_file from data_mem
