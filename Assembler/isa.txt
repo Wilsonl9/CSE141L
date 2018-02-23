@@ -1,0 +1,59 @@
+lut_size 32
+function_keyword proc
+opcodes 16 {
+    add 0000
+    sub 0001
+    st 0010
+    ld 0011
+    and 0100
+    xor 0101
+    memst 0110
+    memld 0111
+    ldi 1000
+    shl 1001
+    shr 1010
+    jmp 1011
+    brneg 1100
+    brz 1101
+    not 1110
+    clr 1111
+}
+
+branch 3 {
+    jmp
+    brneg
+    brz
+}
+
+no_op 2 {
+    not
+    clr
+}
+
+immediate 3 {
+    ldi
+    shr
+    shl
+}
+
+registers 16 {
+    $r0 00000
+    $r1 00001
+    $r2 00010
+    $r3 00011
+    $r4 00100
+    $r5 00101
+    $r6 00110
+    $r7 00111
+    $r8 01000
+    $r9 01001
+    $r10 01010
+    $r11 01011
+    $r12 01100
+    $r13 01101
+    $zero 01110
+    $one 01111
+}
+sugar 1 {
+    done 101100000
+}

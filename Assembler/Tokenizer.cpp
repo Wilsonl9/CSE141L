@@ -156,7 +156,8 @@ bool Tokenizer::GetToken(char *str) {
 
 	int pos=0;
 	char c=CheckChar();
-	while(c!=' ' && c!='\n' && c!='\t' && c!='\r' && !feof((FILE*)File)) {
+	while(c!=' ' && c!='\n' && c!='\t' && c!='\r') {
+		if(feof((FILE*)File)) return false;
 		str[pos++]=GetChar();
 		c=CheckChar();
 	}

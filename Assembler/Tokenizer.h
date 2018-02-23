@@ -4,7 +4,12 @@
 
 #pragma once
 
-#include "Core.h"
+// Types
+typedef unsigned int uint;
+
+// STD library
+#include <vector>
+#include <ctype.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 
