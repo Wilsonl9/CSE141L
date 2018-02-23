@@ -1,0 +1,11 @@
+
+*.bak
+*.qpf
+*.qsf
+*.qws
+*.rpt
+*.model
+*.rdb
+*.qmsgdb
+*.db_info
+*.db
