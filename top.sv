@@ -34,16 +34,16 @@ module top(
   assign    ptr_a = inst[3:2];
   assign    ptr_w = inst[3:2];
   assign    ptr_b = inst[1:0];
-  assign    dm_in = do_a;	    // rf ==> dm
+  assign    dm_in = do_acc;	    // rf ==> dm
   assign    in_a  = do_a; 		// rf ==> ALU
   always_comb case (op)
-    kLDR, kADD, kSUB, kAND, kXOR, kMLD, kLDI, kSHL, kSHR, kNOT: rf_we = 1;
+    kSTR: rf_we = 1;
     default: rf_we = 0;
   endcase
 // load: rf data input from mem; else: from ALU out 
   assign    rf_din = ldr? dm_out : acc;
 // select immediate or rf for second ALU input
-  assign    in_acc  = op==kLDI? dm_i : do_a;//do_b; 
+  assign    in_acc  = op==kLDR? do_a : (op==kLDI? dm_i : do_acc);//do_b; 
 // PC branch values
   logic[1:0] lutpc_ptr;
   always_comb case(op)
@@ -77,14 +77,11 @@ module top(
   rf rf1(						 // reg file -- one write, two reads
     .clk             ,
 	.di   (rf_din)   ,			 // data to be written in
-	.acc                ,
 	.we   (rf_we)      ,		 // write enable
-	.ptr_w(inst[3:2])   ,		 // write pointer = one of the read ptrs
+	.ptr_w(inst[4:1])   ,		 // write pointer = one of the read ptrs
 	.ptr_a(inst[4:1])   ,		 // read pointers 
-//	.ptr_b(inst[1:0])   ,
 	.do_a               ,        // to ALU
 	.do_acc(do_acc)
-//	.do_b  						 // to ALU immediate input switch
   );
 
   alu au1(						 // execution (ALU) unit

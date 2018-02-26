@@ -3,7 +3,6 @@
 module rf(
   input             clk,
   input  [7:0]      di,					// data to load into reg_file
-  input  [7:0]      acc,
   input             we,				    // write enable
   input  [3:0]      ptr_w,				// address to write to
                     ptr_a,				// 2 addresses to read from
@@ -27,7 +26,7 @@ module rf(
 													
   always_ff @(posedge clk)
   begin
-    accumulator = acc;
+    accumulator = di;
   end
 
 endmodule
