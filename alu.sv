@@ -2,29 +2,33 @@
 // CSE141L Win 2018
 import definitions::*;              // declares ALU opcodes 
 module alu (			         
-  input             ci,			    // carry in
+//  input             ci,			    // carry in
   input       [3:0] op,			    // opcode
   input       [7:0] in_a,		    // operands in
                     in_acc,
   output logic[7:0] acc,		    // result out
-  output logic      co,			    // carry out
+//  output logic      co,			    // carry out
   output logic      z, 		    // zero flag, like ARM Z flag
   output logic      neg);          // negative flag
   op_mne op_mnemonic;			    // type enum: used for convenient waveform viewing
+  logic carry;
   
   always_comb begin
-	co = ci;
+	//co = ci;
+	carry = 0;
 	acc = in_acc;
 	neg = acc[7];
 	z = (acc == 0)? 1 : 0;
 	case(op)						// selective override one or more defaults
 		kADD: begin
-					{co,acc} = in_acc + in_a + ci;
+					//{co,acc} = in_acc + in_a + ci;
+					{carry,acc} = in_acc + in_a + carry;
 					neg = acc[7];
 					z = (acc == 0)? 1 : 0;
 				end
 		kSUB: begin
-					{co,acc} = in_acc + (!in_a + 1);
+					//{co,acc} = in_acc + (!in_a + 1);
+					{carry,acc} = in_acc + (!in_a + 1);
 					neg = acc[7];
 					z = (acc == 0)? 1 : 0;
 				end
@@ -54,7 +58,11 @@ module alu (
 					z = (acc == 0)? 1 : 0;
 				end
 		kSHL: begin
-					{co,acc} = in_acc << in_a;	  // shifts the acc n times left
+					//{co,acc} = in_acc << in_a;	  // shifts the acc n times left
+					if(in_a > 0)
+					begin
+					  {carry,acc} = {in_acc, carry} << (in_a - 1);	  // shifts the acc n times left
+					end
 					z = (acc == 0)? 1 : 0;
 				end
 		kSHR: begin
@@ -75,7 +83,8 @@ module alu (
 					z = (acc == 0)? 1 : 0;
 				end
 		kCLR: begin
-					co    = 1'b0;				    // defaults
+					//co    = 1'b0;				    // defaults
+					carry    = 1'b0;				    // defaults
 					acc = acc;
 					z     = 1'b0;
 					neg = 1'b0;

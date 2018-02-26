@@ -14,35 +14,40 @@ module top(
             dm_in,			   
             dm_adr;
   wire[7:0] in_a,			    // alu inputs
-            in_b,			   
-			rslt,               // alu output
-            do_a;	            // reg_file outputs
+            in_acc,			   
+            acc,               // alu output
+            do_a,	            // reg_file outputs
+				do_acc;
   wire[7:0] rf_din;	            // reg_file input
-  wire[4:0] op;	                // opcode
+  wire[3:0] op;	                // opcode
   wire[3:0] ptr_a;			    // ref_file pointers
   wire      z;	                // alu zero flag
+  wire      neg;
   logic     rf_we;              // reg_file write enable
   wire      ldr,			    // load mode (mem --> reg_file)
             str;			    // store (reg_file --> mem)
-  assign    op    = inst[6:4];
+  wire      ci;
+  wire      co;
+  wire[4:0] ptr_i;
+  wire[7:0] dm_i;
+  assign    op    = inst[8:5];
   assign    ptr_a = inst[3:2];
   assign    ptr_w = inst[3:2];
   assign    ptr_b = inst[1:0];
   assign    dm_in = do_a;	    // rf ==> dm
   assign    in_a  = do_a; 		// rf ==> ALU
   always_comb case (op)
-    kLDR, kCLR, kACC, kACI: rf_we = 1;
+    kLDR, kADD, kSUB, kAND, kXOR, kMLD, kLDI, kSHL, kSHR, kNOT: rf_we = 1;
     default: rf_we = 0;
   endcase
 // load: rf data input from mem; else: from ALU out 
-  assign    rf_din = ldr? dm_out : rslt;
+  assign    rf_din = ldr? dm_out : acc;
 // select immediate or rf for second ALU input
-  assign    in_b  = op==kACI? -1 : do_b; 
+  assign    in_acc  = op==kLDI? dm_i : do_a;//do_b; 
 // PC branch values
   logic[1:0] lutpc_ptr;
   always_comb case(op)
-    kBZR: lutpc_ptr = 2;	     // relative
-	kBZA: lutpc_ptr = 1;	     // absolute
+    kBRN, kBRZ: lutpc_ptr = 2;	     // relative
 	default: lutpc_ptr = 0;	     // biz-as-usual
   endcase 					   
   lut_pc lp1(				     // maps 2 bits to 8
@@ -61,7 +66,7 @@ module top(
      .PC   ,				     // pointer in = PC
 	 .inst);				     // output = 7-bit (yours is 9) machine code
 
-  assign done = inst[6:4]==kSTR; // store result & hit done flag
+  assign done = inst[8:5]==kJMP & inst[4:0] == 5'b00000; // store result & hit done flag
 
   ls_dec  dc1(				     // load and store decode
     .op  ,
@@ -72,22 +77,26 @@ module top(
   rf rf1(						 // reg file -- one write, two reads
     .clk             ,
 	.di   (rf_din)   ,			 // data to be written in
+	.acc                ,
 	.we   (rf_we)      ,		 // write enable
 	.ptr_w(inst[3:2])   ,		 // write pointer = one of the read ptrs
-	.ptr_a(inst[3:2])   ,		 // read pointers 
-	.ptr_b(inst[1:0])   ,
+	.ptr_a(inst[4:1])   ,		 // read pointers 
+//	.ptr_b(inst[1:0])   ,
 	.do_a               ,        // to ALU
-	.do_b  						 // to ALU immediate input switch
+	.do_acc(do_acc)
+//	.do_b  						 // to ALU immediate input switch
   );
 
   alu au1(						 // execution (ALU) unit
-    .ci (1'b0),					 // not using carry-in in this program
+//    .ci,					 // not using carry-in in this program
 	.op ,						 // ALU operation
 	.in_a ,						 // alu inputs
-	.in_b ,
-	.rslt ,						 // alu output
-	.co (),						 // carry out -- not connected, not used
-	.z  );						 // zero flag   in_a=0
+	.in_acc ,
+	.acc ,						 // alu output
+//	.co ,						 // carry out -- not connected, not used
+	.z,
+	.neg
+	);						 // zero flag   in_a=0
 
   lut_m lm1(					 // lookup table for data mem address
     .ptr(inst[1:0]),			 // select one of up to four addresses
@@ -100,5 +109,10 @@ module top(
 	.addr(dm_adr),				 // from LUT
 	.di  (dm_in) ,				 // data to store (from reg_file)
 	.dout(dm_out));				 // data out (for loads)
+	
+	lut_i li1(
+	  .ptr_i(inst[5:0]),					// the input index for immediate
+	  .dm_i						// the output immediate
+	  );
 
 endmodule

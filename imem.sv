@@ -4,7 +4,7 @@
 //   good for small lookup tables and arrays, awkward for larger ones, perhaps
 module imem(
   input       [7:0] PC,      // program counter = pointer to imem
-  output logic[6:0] inst);	 // machine code values (yours are 9 bits; my demo is only 7)
+  output logic[8:0] inst);	 // machine code values (yours are 9 bits; my demo is only 7)
   always_comb case(PC)
     0: inst = 'b001_00_00;   // CLR R0  //R0=0  
     1: inst = 'b001_11_00;   // CLR R3  //R3=0
