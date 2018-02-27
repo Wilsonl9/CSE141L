@@ -136,7 +136,7 @@ bool Assembler::Assemble(const char * infile, const char * outfile)
     for(int i = 0; i < lut.size(); ++i)
     {
         Assembler::WriteImmediate(lut[i], 8, out);
-        out << "\t// LUT[i] = " << (int)lut[i] << "\n";
+        out << "\t// LUT[" << i << "] = " << (int)lut[i] << "\n";
     }
     out << "\n\n // Machine Code\n\n";    
     char i[255], op[255];
