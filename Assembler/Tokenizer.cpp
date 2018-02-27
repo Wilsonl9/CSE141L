@@ -5,7 +5,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include "Tokenizer.h"
-
+#include <iostream>
 ////////////////////////////////////////////////////////////////////////////////
 
 Tokenizer::Tokenizer() {
@@ -157,7 +157,8 @@ bool Tokenizer::GetToken(char *str) {
 	int pos=0;
 	char c=CheckChar();
 	while(c!=' ' && c!='\n' && c!='\t' && c!='\r') {
-		if(feof((FILE*)File)) return false;
+//		std::cout << c;
+    if(feof((FILE*)File)) return false;
 		str[pos++]=GetChar();
 		c=CheckChar();
 	}
@@ -205,6 +206,7 @@ bool Tokenizer::SkipLine() {
 ////////////////////////////////////////////////////////////////////////////////
 
 bool Tokenizer::Reset() {
+  LineNum = 1;
 	if(fseek((FILE*)File,0,SEEK_SET)) return false;
 	return true;
 }

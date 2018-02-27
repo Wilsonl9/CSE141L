@@ -1,179 +1,277 @@
 #include "Assembler.h"
-
+#include <iostream>
 Assembler::Assembler(char * isa_filepath)
 {
     Tokenizer isa;
+    char token[255];
+    
     isa.Open(isa_filepath);
-    isa.FindToken("lut_size");
+    isa.Reset();
+    bool good = isa.FindToken("lut_size");
+    if(!good){
+      std::cout << "lut_size bad" << std::endl;
+      std::cout << "Bad ISA file." << std::endl;
+      exit(0);
+    }
     int lut_size = isa.GetInt();
     lut.resize(lut_size);
-    isa.FindToken("function_keyword");
-    isa.GetToken(function_keyword);
-    isa.FindToken("opcodes");
+    isa.Reset();
+    good = isa.FindToken("function_keyword");
+    if(!good){
+      std::cout << "function_keyword bad" << std::endl;
+      std::cout << "Bad ISA file." << std::endl;
+      exit(0);
+    }
+ 
+    isa.GetToken(token);
+    function_keyword = token;
+    isa.Reset();
+    good = isa.FindToken("opcodes");
+    if(!good){
+      std::cout << "opcodes bad" << std::endl;
+      std::cout << "Bad ISA file." << std::endl;
+      exit(0);
+    }
     int num = isa.GetInt();
     isa.SkipLine();
     for(int i = 0; i < num; ++i)
     {
-        char op[255], code[4];
+        char op[255], code[255];
         isa.GetToken(op);
         isa.GetToken(code);
-        this->instructions.insert({op,code});
+        this->instructions[string(op)] = string(code);
     }
-
-    isa.FindToken("branch");
+    isa.Reset();
+    good = isa.FindToken("branch");
+    if(!good){
+      std::cout << "branch bad" << std::endl;
+      std::cout << "Bad ISA file." << std::endl;
+      exit(0);
+    }
     num = isa.GetInt();
     isa.SkipLine();
     for(int i = 0; i < num; ++i)
     {
         char br[255];
         isa.GetToken(br);
-        this->branch_instructions.insert(br);
+        this->branch_instructions.insert(string(br));
     }
 
-    isa.FindToken("no_op");
+    isa.Reset();
+    good = isa.FindToken("no_op");
+    if(!good){
+      
+      std::cout << "noop bad" << std::endl;
+      std::cout << "Bad ISA file." << std::endl;
+      exit(0);
+    }
+
     num = isa.GetInt();
     isa.SkipLine();
     for(int i = 0; i < num; ++i)
     {
         char noop[255];
         isa.GetToken(noop);
-        this->no_ops.insert(noop);
+        this->no_ops.insert(string(noop));
     }
-
-    isa.FindToken("immediate");
+    isa.Reset();
+    good = isa.FindToken("immediate");
+    if(!good){
+      
+      std::cout << "immediate bad" << std::endl;
+      std::cout << "Bad ISA file." << std::endl;
+      exit(0);
+    }
     num = isa.GetInt();
     isa.SkipLine();
     for(int i = 0; i < num; ++i)
     {
         char imm[255];
         isa.GetToken(imm);
-        this->immediate_insts.insert(imm);
+        this->immediate_insts.insert(string(imm));
     }
 
-    isa.FindToken("registers");
+    isa.Reset();
+    good = isa.FindToken("registers");
+    if(!good){
+      std::cout << "registers bad" << std::endl;
+      std::cout << "Bad ISA file." << std::endl;
+      exit(0);
+    }
     num = isa.GetInt();
     isa.SkipLine();
     for(int i = 0; i < num; ++i)
     {
-        char reg[255], code[5];
+        char reg[255], code[255];
         isa.GetToken(reg);
         isa.GetToken(code);
-        this->registers.insert({reg,code});
+        this->registers[string(reg)] = string(code);
     }
 
-    isa.FindToken("sugar");
+    isa.Reset();
+    good = isa.FindToken("sugar");
+    if(!good){
+      return; 
+    }
     num = isa.GetInt();
+    isa.SkipLine();
     for(int i = 0; i < num; ++i)
     {
-        char op[255], code[9];
+        char op[255], code[255];
         isa.GetToken(op);
         isa.GetToken(code);
-        this->sugar.insert({op,code});
+        this->sugar[string(op)] = string(code);
     }
+    isa.Close();
 }
 
 bool Assembler::Assemble(const char * infile, const char * outfile)
 {
-    BitOutputStream out;
-    out.open(outfile);
+    std::ofstream out(outfile, std::ofstream::out);
     Tokenizer t;
     t.Open(infile);
-    std::unordered_map<char *, int> labels = GenerateLookupTable(t);
+    std::unordered_map<string, int> labels = GenerateLookupTable(t);
     t.Reset();
-
+    out << "// Lookup Table values\n\n";
     for(int i = 0; i < lut.size(); ++i)
     {
         Assembler::WriteImmediate(lut[i], 8, out);
+        out << "\t// LUT[i] = " << (int)lut[i] << "\n";
     }
-    
-    char inst[255], operand[255];
-    t.FindToken(function_keyword);
+    out << "\n\n // Machine Code\n\n";    
+    char i[255], op[255];
+    string inst, operand;
+    t.FindToken(function_keyword.c_str());
     t.SkipLine();
-    bool check = t.GetToken(inst);
+    bool check = t.GetToken(i);
     while(check)
     {
+        inst = i;   
         if(instructions.count(inst) == 1)
         {
             Assembler::WriteBlock(instructions[inst], 4, out);
         } else if (sugar.count(inst) == 1)
         {
-            Assembler::WriteBlock(sugar[inst], 4, out);
+            Assembler::WriteBlock(sugar[inst], 9, out);
+            t.SkipLine();
+            check = t.GetToken(i);
             continue;
-        } else return false;
-
+        } else {
+            string l_temp = inst;
+            l_temp.back() = '\0';
+            string l = l_temp.c_str();
+            if(labels.count(l) == 1){
+              t.SkipLine();
+              check = t.GetToken(i);
+              continue;
+            } else {
+              std::cout << "Invalid instruction: " << inst << " on line " << t.GetLineNum() << std::endl;
+              return false;
+            }
+        }
         if(no_ops.count(inst) == 1) 
         {
+            out << "_";
             Assembler::WriteImmediate(0, 5, out);
+            out << "\t// " << inst << '\n';
+            t.SkipLine();
+            check = t.GetToken(i);
+            continue;
         }
 
-        check = t.GetToken(operand);
+        check = t.GetToken(op);
+        operand = op;
         if(registers.count(operand) == 1)
         {
+            out << "_";
             Assembler::WriteBlock(registers[operand], 5, out);
         } else if (branch_instructions.count(inst) == 1){
+            out << "_";
             Assembler::WriteImmediate(labels[operand], 5, out);
         } else if (immediate_insts.count(inst) == 1)
         {
-            Assembler::WriteImmediate(atoi(operand), 5, out);
-        } else return false;
-        check = t.GetToken(inst);
+            out << "_";
+            Assembler::WriteImmediate(stoi(operand), 5, out);
+        } else{
+          std::cout << "invalid operand: " << operand << " on line " << t.GetLineNum() << std::endl;
+          return false; 
+        }
+        out << "\t// " << inst << " " << operand << '\n';
+        
+        t.SkipLine();
+        check = t.GetToken(i);   
     }
     t.Close();
     out.close();
+    return true;
 }
 
-std::unordered_map<char*, int> GenerateLookupTable(Tokenizer &t)
+std::unordered_map<string, int> Assembler::GenerateLookupTable(Tokenizer &t)
 {
     int num_labels = 0;
-    std::unordered_map<char*, int> labels_index;
-    std::vector<char*> labels;
-    bool check;
+    std::unordered_map<string, int> labels_index;
+    std::vector<string> labels;
     char label[255];
-    while((check = t.FindToken("jmp")))
+    while(t.FindToken("jmp"))
     {
         int line = t.GetLineNum();
         t.GetToken(label);
-        labels_index[label] = num_labels;
-        labels.push_back(label);
+        labels_index[string(label)] = num_labels;
+        labels.push_back(string(label));
         lut[num_labels++] = line;
     }
 
     t.Reset();
-    while(check = t.FindToken("brneg"))
+    while(t.FindToken("brneg"))
     {
         int line = t.GetLineNum();
         t.GetToken(label);
-        labels_index[label] = num_labels;
-        labels.push_back(label);
+        labels_index[string(label)] = num_labels;
+        labels.push_back(string(label));
         lut[num_labels++] = line;
     }
 
     t.Reset();
-    while(check = t.FindToken("brz"))
+    while(t.FindToken("brz"))
     {
         int line = t.GetLineNum();
         t.GetToken(label);
-        labels_index[label] = num_labels;
-        labels.push_back(label);
+        labels_index[string(label)] = num_labels;
+        labels.push_back(string(label));
         lut[num_labels++] = line;
     }
 
+    char check[255];
     for(int i = 0; i < num_labels; ++i)
     {
         t.Reset();
-        char* label = labels[i];
-        t.FindToken(label);
-        int label_num = t.GetLineNum() + 1;
+        string label = labels[i];
+        label += ":";
+        if(!t.FindToken(label.c_str())){
+          cout << "Invalid label: " << label << endl;
+          continue;
+        }
+        t.SkipLine();
+        bool good = t.GetToken(check);
+        while(good && instructions.count(string(check)) != 1){
+          t.SkipLine();
+          good = t.GetToken(check);
+        }
+        int label_num = t.GetLineNum();
         lut[i] = label_num - lut[i];
     }
+    return labels_index;
 }
 
-bool Assembler::WriteBlock(char * block, int num_bits, std::ofstream &out)
+bool Assembler::WriteBlock(string b, int num_bits, std::ofstream &out)
 {
+    const char * block = b.c_str();
     for(int i = 0; i < num_bits; ++i)
     {
         out << block[i];
     }
+
+    return true;
 }
 
 bool Assembler::WriteImmediate(int immediate, int num_bits, std::ofstream &out)
@@ -186,6 +284,6 @@ bool Assembler::WriteImmediate(int immediate, int num_bits, std::ofstream &out)
         else bin[i] = '1';
         mask = mask << 1;
     }
-
-    return Assembler::WriteBlock(bin, num_bits, out);
+     
+    return Assembler::WriteBlock(string(bin), num_bits, out);
 }

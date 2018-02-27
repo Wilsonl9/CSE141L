@@ -1,0 +1,59 @@
+proc ClosestPair:
+
+ldi 255			// load min val
+st $r0			// min value
+ldi 20			// array size
+st $r3			// outer loop limit
+st $r4			// inner loop limit
+ldi 127			// move base mem address
+st $r7			// memory address 127, will hold result later
+	
+OUTER_LOOP:
+	add $one					// 127 + 1, then  used to inc mem address
+	st $r8						// holds current address of element
+	memld $r8 				// Load element into accumulator
+	st $r1						// first array element A[i]
+	ld $r3						// 20 to r3
+	sub $one					// sub 1 to run i-1 times
+	st $r4						// store in r4
+
+	INNER_LOOP:
+		ld $r8					// move $r8 into acc to increment
+		add $one				// increment address
+		st $r8					// store back into $r8
+		memld $r8			// next elem into acc
+		st $r2					// second array elem
+		ld $r1					// load $r1 into accum acc=A[i]
+		sub $r2				// A[i] - A[j], first elem - second
+		
+		brneg TWOS_COMP			// dist, abs val of result
+		jmp POS_RES 			// positive result
+
+	TWOS_COMP:
+		not 					// negate the result
+		add $one			
+
+	POS_RES:
+		st $r5 					// dist into $r5
+		sub $r0				// dist - min
+		brneg UPDATE_MIN			// update min if neg res
+		
+		CHECK_LOOP:
+			ld $r4				// load r3 -1 
+			sub $one			// decrement inner loop 
+			brz END_INNERLOOP 	// inner loop done 
+			jmp INNER_LOOP		// next iteration
+
+		UPDATE_MIN:
+			ld $r5				// move dist to acc
+			st $r0				// update min
+			jmp CHECK_LOOP
+	
+	END_INNERLOOP:
+
+	ld $r3						// boundary check
+	sub $one					
+	brz END_OUTERLOOP			// finish outer loop
+	jmp OUTER_LOOP				// next iteration
+END_OUTERLOOP:
+done

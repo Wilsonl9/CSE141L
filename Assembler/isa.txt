@@ -18,24 +18,20 @@ opcodes 16 {
     not 1110
     clr 1111
 }
-
 branch 3 {
     jmp
     brneg
     brz
 }
-
 no_op 2 {
     not
     clr
 }
-
 immediate 3 {
     ldi
     shr
     shl
 }
-
 registers 16 {
     $r0 00000
     $r1 00001
@@ -55,5 +51,5 @@ registers 16 {
     $one 01111
 }
 sugar 1 {
-    done 101100000
+  done 101100000
 }

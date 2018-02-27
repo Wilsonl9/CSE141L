@@ -1,0 +1,50 @@
+proc StringMatch:
+
+	memld $r0				// load mem loc 6
+	st $r8					// store into r8
+	ldi 0 					// counter
+	st $r3					// r3 = counter
+	
+LOAD:
+	ld $r8					// Load from r8
+	st $r0					// into r0
+	ldi 15 					// mask 00001111
+	st $r4					// store into r4
+	ldi 4 					// number of comparisons
+	st $r7					// store in r7
+	memld $r1
+	st $r5					// temp reg for mem[addr]
+COMPARE:
+	ld $r5					// load data
+	and $r4				// apply mask
+	xor $r0					// xor
+	brz MATCH				// if 0, it's a mat
+	ld $r4					// else shift and compare again
+	shl 1					// shift mask
+	st $r4
+	ld $r0
+	shl 1					// shift pattern
+	st $r0
+	ld $r7
+	sub $one				// decrement num comparisons
+	st $r7
+	brz NEXT_ELEMENT 		// if no more comparisons, next element
+	jmp COMPARE			// else compare again
+
+MATCH:
+	ld $r3	
+	add $one				// increment counter
+	st $r3
+NEXT_ELEMENT:
+	ld $r2		
+	sub $one				// decrement size of array remaining
+	st $r2
+	brz DONE				// if no more array, done
+	ld $r1		
+	add $one				// increment pointer
+	st $r1
+	jmp LOAD				// load new data
+DONE:
+	ld $r3
+	memst $r6		 		// store result
+	done

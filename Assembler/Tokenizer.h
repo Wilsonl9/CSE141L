@@ -10,7 +10,7 @@ typedef unsigned int uint;
 // STD library
 #include <vector>
 #include <ctype.h>
-
+#include <cstdlib>
 ////////////////////////////////////////////////////////////////////////////////
 
 // The Tokenizer class for reading simple ascii data files. The GetToken function
