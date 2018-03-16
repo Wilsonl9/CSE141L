@@ -8,7 +8,7 @@ module pc (
   input signed [7:0] bamt,		 // how far/where to jump or branch
   input              clk,	     // clk -- PC advances and memory/reg_file writes are clocked 
   input              reset,		 // overrides all else, forces PC to 0 (start of program)
-  output logic [7:0] PC);		 // program count
+  output logic [15:0] PC);		 // program count
 
   assign brel = (z && op==BRZ) || (neg && op==BRN) || (z && op==JMP);	 // do a relative branch iff ALU z flag is set on a BRZ instruction
 

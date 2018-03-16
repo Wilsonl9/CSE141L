@@ -8,7 +8,7 @@ module top(
 
 // list of interconnecting wires/buses w/ respective bit widths 
   wire signed[7:0] bamt;	    // PC jump
-  wire[7:0] PC;				    // program counter
+  wire[15:0] PC;				    // program counter
   wire[8:0] inst;			    // machine code
   wire[7:0] dm_out,			    // data memory
             dm_in,			   
