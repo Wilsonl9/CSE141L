@@ -47,7 +47,7 @@ module top(
 // PC branch values
   logic[1:0] lutpc_ptr;
   always_comb case(op)
-    kBRN, kBRZ: lutpc_ptr = 2;	     // relative
+    kBRN, kBRZ, kJMP: lutpc_ptr = in_a;	     // relative
 	default: lutpc_ptr = 0;	     // biz-as-usual
   endcase 					   
   lut_pc lp1(				     // maps 2 bits to 8
@@ -60,6 +60,7 @@ module top(
 	.op   ,					     // from inst_mem
 	.bamt (bamt) ,		         // from lut_pc
 	.z    ,					     // zero flag from ALU
+  .neg , 
 	.PC );					     // to PC module
 
   imem im1(					     // instruction memory
@@ -96,7 +97,7 @@ module top(
 	);						 // zero flag   in_a=0
 
   lut_m lm1(					 // lookup table for data mem address
-    .ptr(inst[1:0]),			 // select one of up to four addresses
+    .ptr(inst[4:0]),			 // select one of up to four addresses
 	.dm_adr						 // send this (8-bit) address to data mem
   );
 
@@ -108,7 +109,7 @@ module top(
 	.dout(dm_out));				 // data out (for loads)
 	
 	lut_i li1(
-	  .ptr_i(inst[5:0]),					// the input index for immediate
+	  .ptr_i(inst[4:0]),					// the input index for immediate
 	  .dm_i						// the output immediate
 	  );
 

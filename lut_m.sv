@@ -4,13 +4,16 @@
 //   (could be ANY desired others, including 64, 65, 128, etc.)
 //   using only a 2-bit selector
 module lut_m(
-  input [1:0] ptr,
+  input [4:0] ptr,
   output logic[7:0] dm_adr);
 
 always_comb case (ptr)
-  2'b00: dm_adr = 3;	        // demo will load from mem_adr 3 and 4
-  2'b01: dm_adr = 4;
-  2'b10: dm_adr = 5;			// demo will store result into mem_adr 5
+	0: dm_adr = -8'd11;	        // demo will load from mem_adr 3 and 4
+	1: dm_adr = 8'd9;
+	2: dm_adr = -8'd20;
+	3: dm_adr = 8'd14;
+	4: dm_adr = 8'd3;
+	5: dm_adr = 8'd17;
   default: dm_adr = 255;
 endcase
 

@@ -2,9 +2,11 @@
 // in class demo -- instruction memory ROM
 // This is the case statement (if ... else if ... else if ...) version;
 //   good for small lookup tables and arrays, awkward for larger ones, perhaps
+// ----- UNMODIFIED 
 module imem(
-  input       [7:0] PC,      // program counter = pointer to imem
+  input       [15:0] PC,      // program counter = pointer to imem
   output logic[8:0] inst);	 // machine code values (yours are 9 bits; my demo is only 7)
+  /*
   always_comb case(PC)
     0: inst = 'b001_00_00;   // CLR R0  //R0=0  
     1: inst = 'b001_11_00;   // CLR R3  //R3=0
@@ -18,4 +20,15 @@ module imem(
     9: inst = 'b111_11_11;   // halt
 	default: inst = 'b111_11_11; // covers all cases not included in the above list
   endcase
+  */
+    logic [8:0] inst_rom [2**16];    // 2**IW elements, 9 bits each
+// load machine code program into instruction ROM
+  initial 
+  $readmemb("mult_mach", inst_rom);
+
+// continuous combinational read output  
+//   change the pointer (from program counter) ==> change the output
+  assign inst = inst_rom[PC];
+
+
 endmodule
