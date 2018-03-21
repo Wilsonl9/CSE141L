@@ -132,13 +132,18 @@ bool Assembler::Assemble(const char * infile, const char * outfile)
     t.Open(infile);
     std::unordered_map<string, int> labels = GenerateLookupTable(t);
     t.Reset();
-    out << "// Lookup Table values\n\n";
+    std::string s(outfile);
+    s.append("_lut");
+    std::ofstream lut_out(s, std::ofstream::out);
+    
+    lut_out << "// Lookup Table values\n\n";
     for(int i = 0; i < lut.size(); ++i)
     {
-        Assembler::WriteImmediate(lut[i], 8, out);
-        out << "\t// LUT[" << i << "] = " << (int)lut[i] << "\n";
+        Assembler::WriteImmediate(lut[i], 8, lut_out);
+        lut_out << "\t// LUT[" << i << "] = " << (int)lut[i] << "\n";
     }
-    out << "\n\n // Machine Code\n\n";    
+    lut_out.close();
+    out << "// Machine Code\n\n";    
     char i[255], op[255];
     string inst, operand;
     t.FindToken(function_keyword.c_str());
@@ -153,6 +158,7 @@ bool Assembler::Assemble(const char * infile, const char * outfile)
         } else if (sugar.count(inst) == 1)
         {
             Assembler::WriteBlock(sugar[inst], 9, out);
+            out << "\t// " << inst << " " << operand << '\n';
             t.SkipLine();
             check = t.GetToken(i);
             continue;
@@ -208,7 +214,8 @@ bool Assembler::Assemble(const char * infile, const char * outfile)
 
 std::unordered_map<string, int> Assembler::GenerateLookupTable(Tokenizer &t)
 {
-    int num_labels = 0;
+    int num_labels = 1; //0th element should be 0 for our "done" command
+    lut[0] = 0;
     std::unordered_map<string, int> labels_index;
     std::vector<string> labels;
     char label[255];
@@ -242,11 +249,11 @@ std::unordered_map<string, int> Assembler::GenerateLookupTable(Tokenizer &t)
     }
 
     char check[255];
-    for(int i = 0; i < num_labels; ++i)
+    for(int i = 1; i < num_labels; ++i)
     {
         t.Reset();
-        string label = labels[i];
-        label += ":";
+        string label = labels[i-1];
+        label.append(":");
         if(!t.FindToken(label.c_str())){
           cout << "Invalid label: " << label << endl;
           continue;
