@@ -22,6 +22,13 @@ module program_all_tb();
 	pa1.dm1.guts[1] =  a;           // initialize DUT data memory
 	pa1.dm1.guts[2] =  b;		    // personalize these path names
 	pa1.dm1.guts[3] =  c;			//   to your design
+        pa1.rf1.core[7] =  0;
+        pa1.rf1.core[8] =  1;
+        pa1.rf1.core[9] =  2;
+        pa1.rf1.core[10] =  3;
+        pa1.rf1.core[11] =  4;
+        pa1.rf1.core[14] =  0;
+        pa1.rf1.core[15] =  1;
 // compute what the product should be
 // under Verilog rules, only the lower 16 bits will be retained
     $display("program 1 -- multiply three 8-bit numbers");

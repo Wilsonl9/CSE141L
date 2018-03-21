@@ -30,10 +30,12 @@ module top(
   wire      co;
   wire[4:0] ptr_i;
   wire[7:0] dm_i;
+  wire[3:0] ptr_w;
   assign    op    = inst[8:5];
-  assign    ptr_a = inst[3:2];
-  assign    ptr_w = inst[3:2];
+  assign    ptr_a = inst[3:0];
+  assign    ptr_w = inst[3:0];
   assign    ptr_b = inst[1:0];
+  assign    ptr_i = inst[4:0];
   assign    dm_in = do_acc;	    // rf ==> dm
   assign    in_a  = do_a; 		// rf ==> ALU
   always_comb case (op)
@@ -43,11 +45,11 @@ module top(
 // load: rf data input from mem; else: from ALU out 
   assign    rf_din = ldr? dm_out : acc;
 // select immediate or rf for second ALU input
-  assign    in_acc  = op==kLDR? do_a : (op==kLDI? dm_i : do_acc);//do_b; 
+  assign    in_acc  = op==kLDR? do_a : (op==kLDI? dm_i : (op == kMLD? dm_out : do_acc));//do_b; 
 // PC branch values
-  logic[1:0] lutpc_ptr;
+  logic[4:0] lutpc_ptr;
   always_comb case(op)
-    kBRN, kBRZ, kJMP: lutpc_ptr = in_a;	     // relative
+    kBRN, kBRZ, kJMP: lutpc_ptr = ptr_i;	     // relative
 	default: lutpc_ptr = 0;	     // biz-as-usual
   endcase 					   
   lut_pc lp1(				     // maps 2 bits to 8
@@ -67,7 +69,7 @@ module top(
      .PC   ,				     // pointer in = PC
 	 .inst);				     // output = 7-bit (yours is 9) machine code
 
-  assign done = inst[8:5]==kJMP & inst[4:0] == 5'b00000; // store result & hit done flag
+  assign done = inst[8:5]==kJMP && inst[4:0] == 5'b00000; // store result & hit done flag
 
   ls_dec  dc1(				     // load and store decode
     .op  ,
@@ -79,8 +81,8 @@ module top(
     .clk             ,
 	.di   (rf_din)   ,			 // data to be written in
 	.we   (rf_we)      ,		 // write enable
-	.ptr_w(inst[4:1])   ,		 // write pointer = one of the read ptrs
-	.ptr_a(inst[4:1])   ,		 // read pointers 
+	.ptr_w(ptr_w)   ,		 // write pointer = one of the read ptrs
+	.ptr_a(ptr_a)   ,		 // read pointers 
 	.do_a               ,        // to ALU
 	.do_acc(do_acc)
   );
@@ -97,7 +99,7 @@ module top(
 	);						 // zero flag   in_a=0
 
   lut_m lm1(					 // lookup table for data mem address
-    .ptr(inst[4:0]),			 // select one of up to four addresses
+    .ptr(do_a),			 // select one of up to four addresses
 	.dm_adr						 // send this (8-bit) address to data mem
   );
 
@@ -109,7 +111,7 @@ module top(
 	.dout(dm_out));				 // data out (for loads)
 	
 	lut_i li1(
-	  .ptr_i(inst[4:0]),					// the input index for immediate
+	  .ptr_i,					// the input index for immediate
 	  .dm_i						// the output immediate
 	  );
 

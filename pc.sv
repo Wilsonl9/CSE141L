@@ -10,13 +10,14 @@ module pc (
   input              reset,		 // overrides all else, forces PC to 0 (start of program)
   output logic [15:0] PC);		 // program count
 
-  assign brel = (z && op==BRZ) || (neg && op==BRN) || (z && op==JMP);	 // do a relative branch iff ALU z flag is set on a BRZ instruction
+  wire brel;
+  assign brel = (z && op==BRZ) || (neg && op==BRN) || (op==JMP);	 // do a relative branch iff ALU z flag is set on a BRZ instruction
 
   always_ff @(posedge clk) 
     if(reset)					 // resetting to start=0
   	  PC <= 'b0;
   	else if (brel)               // relative branching
-  	  PC <= PC + bamt;
+  	  PC <= PC + 16'(signed'(bamt));
   	else						 // normal/default operation
   	  PC <= PC + 'b1;			 
 

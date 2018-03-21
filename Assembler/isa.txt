@@ -7,8 +7,8 @@ opcodes 16 {
     ld 0011
     and 0100
     xor 0101
-    memst 0111
     memld 0110
+    memst 0111
     ldi 1000
     shl 1001
     shr 1010

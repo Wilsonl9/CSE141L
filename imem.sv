@@ -6,6 +6,14 @@
 module imem(
   input       [15:0] PC,      // program counter = pointer to imem
   output logic[8:0] inst);	 // machine code values (yours are 9 bits; my demo is only 7)
+
+    logic [8:0] inst_rom [0:2**16];    // 2**IW elements, 9 bits each
+// load machine code program into instruction ROM
+  initial 
+  begin
+    $readmemb("C:/Users/Wilson/Google Drive/Laptop/Documents/School/CSE141L/CSE141L/Multiply_machine", inst_rom);
+  end
+
   /*
   always_comb case(PC)
     0: inst = 'b001_00_00;   // CLR R0  //R0=0  
@@ -21,11 +29,6 @@ module imem(
 	default: inst = 'b111_11_11; // covers all cases not included in the above list
   endcase
   */
-    logic [8:0] inst_rom [2**16];    // 2**IW elements, 9 bits each
-// load machine code program into instruction ROM
-  initial 
-  $readmemb("mult_mach", inst_rom);
-
 // continuous combinational read output  
 //   change the pointer (from program counter) ==> change the output
   assign inst = inst_rom[PC];

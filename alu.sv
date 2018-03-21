@@ -12,7 +12,7 @@ module alu (
   output logic      neg);          // negative flag
   op_mne op_mnemonic;			    // type enum: used for convenient waveform viewing
   logic carry;
-  
+
   always_comb begin
 	//co = ci;
 	carry = 0;
@@ -28,7 +28,7 @@ module alu (
 				end
 		kSUB: begin
 					//{co,acc} = in_acc + (!in_a + 1);
-					{carry,acc} = in_acc + (!in_a + 1);
+					{carry,acc} = in_acc + (~in_a + 1);
 					neg = acc[7];
 					z = (acc == 0)? 1 : 0;
 				end

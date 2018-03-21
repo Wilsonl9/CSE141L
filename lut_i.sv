@@ -8,10 +8,17 @@ module lut_i(
   output logic[7:0] dm_i);
 
 always_comb case (ptr_i)
-  5'b00: dm_i = 3;	        // demo will load from mem_adr 3 and 4
+	0: dm_i = -8'd11;	        // demo will load from mem_adr 3 and 4
+	1: dm_i = 8'd9;
+	2: dm_i = -8'd20;
+	3: dm_i = 8'd14;
+	4: dm_i = 8'd3;
+	5: dm_i = 8'd17;
+  default: dm_i = 8'd0;
+  /*5'b00: dm_i = 3;	        // demo will load from mem_adr 3 and 4
   5'b01: dm_i = 4;
   5'b10: dm_i = 5;			// demo will store result into mem_adr 5
-  default: dm_i = 255;
+  default: dm_i = 255;*/
 endcase
 
 endmodule
