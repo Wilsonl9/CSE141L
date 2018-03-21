@@ -8,7 +8,7 @@ module imem(
   output logic[8:0] inst);	 // machine code values (yours are 9 bits; my demo is only 7)
 
     logic [8:0] inst_rom [0:2**16];    // 2**IW elements, 9 bits each
-// load machine code program into instruction ROM
+ //load machine code program into instruction ROM
   initial 
   begin
     $readmemb("C:/Users/Wilson/Google Drive/Laptop/Documents/School/CSE141L/CSE141L/Multiply_machine", inst_rom);

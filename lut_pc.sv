@@ -8,7 +8,7 @@ module lut_pc(
   always_comb case (ptr)
    0: dout = 8'd0;	        // demo will load from mem_adr 3 and 4
    1: dout = -8'd11;	        // demo will load from mem_adr 3 and 4
-	2: dout = 8'd7;
+	2: dout = 8'd6;
 	3: dout = -8'd18;
 	4: dout = 8'd11;
 	5: dout = 8'd2;

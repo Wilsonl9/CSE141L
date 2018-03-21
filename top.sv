@@ -28,6 +28,7 @@ module top(
             str;			    // store (reg_file --> mem)
   wire      ci;
   wire      co;
+  reg      carry;
   wire[4:0] ptr_i;
   wire[7:0] dm_i;
   wire[3:0] ptr_w;
@@ -86,14 +87,20 @@ module top(
 	.do_a               ,        // to ALU
 	.do_acc(do_acc)
   );
+  
+  always_ff @(posedge clk)
+  begin
+    carry <= co;
+  end
+  assign ci = carry;
 
   alu au1(						 // execution (ALU) unit
-//    .ci,					 // not using carry-in in this program
+    .ci,					 // not using carry-in in this program
 	.op ,						 // ALU operation
 	.in_a ,						 // alu inputs
 	.in_acc ,
 	.acc ,						 // alu output
-//	.co ,						 // carry out -- not connected, not used
+	.co ,						 // carry out -- not connected, not used
 	.z,
 	.neg
 	);						 // zero flag   in_a=0

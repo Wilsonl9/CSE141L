@@ -16,9 +16,9 @@ module program_all_tb();
 //  logic[7:0] test;
   initial begin
 // start first multiplication
-    a               =  5;
-	b               = 15;
-	c               =  2;
+    a               =  255;//($random(seed) % 127) + 127;//5;
+	b               = 255;//($random(seed) % 127) + 127;//15;
+	c               =  200;//($random(seed) % 127) + 127;//2;
 	pa1.dm1.guts[1] =  a;           // initialize DUT data memory
 	pa1.dm1.guts[2] =  b;		    // personalize these path names
 	pa1.dm1.guts[3] =  c;			//   to your design
