@@ -8,12 +8,14 @@ module lut_m(
   output logic[7:0] dm_adr);
 
 always_comb case (ptr)
-	0: dm_adr = 8'd1;	        // demo will load from mem_adr 3 and 4
-	1: dm_adr = 8'd2;
-	2: dm_adr = 8'd3;
-	3: dm_adr = 8'd4;
-	4: dm_adr = 8'd5;
-  default: dm_adr = 8'd0;
+	1: dm_adr = 8'd1;	        // demo will load from mem_adr 3 and 4
+	2: dm_adr = 8'd2;
+	3: dm_adr = 8'd3;
+	4: dm_adr = 8'd4;
+	5: dm_adr = 8'd5;
+
+
+  default: dm_adr = ptr;
 endcase
 
 endmodule

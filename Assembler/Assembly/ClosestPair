@@ -7,7 +7,7 @@ st $r3			// outer loop limit
 st $r4			// inner loop limit
 ldi 127			// move base mem address
 st $r7			// memory address 127, will hold result later
-	
+
 OUTER_LOOP:
 	add $one					// 127 + 1, then  used to inc mem address
 	st $r8						// holds current address of element
@@ -16,20 +16,32 @@ OUTER_LOOP:
 	ld $r3						// 20 to r3
 	sub $one					// sub 1 to run i-1 times
 	st $r4						// store in r4
+	
+	brz END_INNERLOOP
+
+	ld $r8 // new
+	add $one 
+	st $r9
 
 	INNER_LOOP:
-		ld $r8					// move $r8 into acc to increment
-		add $one				// increment address
-		st $r8					// store back into $r8
-		memld $r8			// next elem into acc
+		memld $r9 //memld $r8			// next elem into acc
 		st $r2					// second array elem
 		ld $r1					// load $r1 into accum acc=A[i]
-		sub $r2				// A[i] - A[j], first elem - second
+		sub $r2					// A[i] - A[j], first elem - second
 		
+		st $r10					// new
+		ld $zero
+		shl 1
+		not
+		brz TWOS_COMP
+		ld $r10
+		add $zero
+
 		brneg TWOS_COMP			// dist, abs val of result
 		jmp POS_RES 			// positive result
 
 	TWOS_COMP:
+		ld $r10
 		not 					// negate the result
 		add $one			
 
@@ -41,7 +53,11 @@ OUTER_LOOP:
 		CHECK_LOOP:
 			ld $r4				// load r3 -1 
 			sub $one			// decrement inner loop 
+			st $r4	// 3/22 added
 			brz END_INNERLOOP 	// inner loop done 
+			ld $r9					// move $r8 into acc to increment
+			add $one				// increment address
+			st $r9 //st $r8					// store back into $r8
 			jmp INNER_LOOP		// next iteration
 
 		UPDATE_MIN:
@@ -50,10 +66,17 @@ OUTER_LOOP:
 			jmp CHECK_LOOP
 	
 	END_INNERLOOP:
+	//ld $r8 // new
+	//add $one
+	//st $r8
 
 	ld $r3						// boundary check
-	sub $one					
+	sub $one		
+	st $r3			
 	brz END_OUTERLOOP			// finish outer loop
+	ld $r8 // new
 	jmp OUTER_LOOP				// next iteration
 END_OUTERLOOP:
+	ld $r0
+	memst $r7
 done

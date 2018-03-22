@@ -12,7 +12,7 @@ module alu (
   output logic      neg);          // negative flag
   op_mne op_mnemonic;			    // type enum: used for convenient waveform viewing
   //logic carry;
-
+logic[7:0] temp;
   always_comb begin
 	co = ci;
 	//carry = ;
@@ -27,7 +27,9 @@ module alu (
 					z = (acc == 0)? 1 : 0;
 				end
 		kSUB: begin
-					{co,acc} = in_acc + (~in_a + 1);
+					
+					{co,acc} = {in_acc[7],in_acc} +((~{in_a[7],in_a}) + 1);
+					temp = (~in_a) + 1;
 					//{carry,acc} = in_acc + (~in_a + 1);
 					neg = acc[7];
 					z = (acc == 0)? 1 : 0;
@@ -39,6 +41,7 @@ module alu (
 		kLDR: begin
 					acc = in_a;		        // load reg_file from data_mem
 					z = (acc == 0)? 1 : 0;
+					//neg = acc[7];
 				end
 		kAND: begin
 					acc = in_acc & in_a;  	  // AND, acc = acc & operand
@@ -54,7 +57,7 @@ module alu (
 				end
 		kMST: acc = in_acc;	        // stores from acc into memory
 		kLDI: begin
-					acc = in_a;	           // load immediate into acc
+					acc = in_acc;	           // load immediate into acc
 					z = (acc == 0)? 1 : 0;
 				end
 		kSHL: begin
@@ -82,6 +85,7 @@ module alu (
 		kNOT: begin
 					acc = ~in_acc;	        // NOT, acc = ~acc	 
 					z = (acc == 0)? 1 : 0;
+					co = 1'b0;
 				end
 		kCLR: begin
 					co    = 1'b0;				    // defaults

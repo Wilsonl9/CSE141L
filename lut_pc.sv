@@ -13,6 +13,18 @@ module lut_pc(
 	4: dout = 8'd11;
 	5: dout = 8'd2;
 	6: dout = 8'd15;
+	7: dout = 8'd2; // closest pair stuff
+	8: dout = 8'd4;
+	9: dout	= 8'd9;
+	10: dout = -8'd26;
+	11: dout = -8'd10;
+	12: dout = -8'd46;
+	13: dout = 8'd8;
+	14: dout = 8'd34;
+	15: dout = 8'd5;
+
+
+
   default: dout = 8'd0;
 	/*2'b01: dout = 8'd8;				  // use for absolute jump to PC=8
 	2'b10: dout = -8'd3;			  // for relative jump back by 3 instructions
