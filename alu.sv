@@ -54,7 +54,7 @@ module alu (
 				end
 		kMST: acc = in_acc;	        // stores from acc into memory
 		kLDI: begin
-					acc = in_a;	           // load immediate into acc
+					acc = in_acc;	           // load immediate into acc
 					z = (acc == 0)? 1 : 0;
 				end
 		kSHL: begin

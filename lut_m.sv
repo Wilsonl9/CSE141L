@@ -13,7 +13,7 @@ always_comb case (ptr)
 	2: dm_adr = 8'd3;
 	3: dm_adr = 8'd4;
 	4: dm_adr = 8'd5;
-  default: dm_adr = 8'd0;
+  default: dm_adr = ptr;
 endcase
 
 endmodule

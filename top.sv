@@ -38,7 +38,7 @@ module top(
   assign    ptr_b = inst[1:0];
   assign    ptr_i = inst[4:0];
   assign    dm_in = do_acc;	    // rf ==> dm
-  assign    in_a  = do_a; 		// rf ==> ALU
+  assign    in_a  = op==kSHL || op==kSHR ? ptr_i : do_a; 		// rf ==> ALU
   always_comb case (op)
     kSTR: rf_we = 1;
     default: rf_we = 0;

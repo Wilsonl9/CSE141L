@@ -11,7 +11,7 @@ module imem(
  //load machine code program into instruction ROM
   initial 
   begin
-    $readmemb("C:/Users/Wilson/Google Drive/Laptop/Documents/School/CSE141L/CSE141L/Multiply_machine", inst_rom);
+    $readmemb("C:/StringMatch_machine", inst_rom);
   end
 
   /*
