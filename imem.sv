@@ -11,7 +11,11 @@ module imem(
  //load machine code program into instruction ROM
   initial 
   begin
+<<<<<<< HEAD
     $readmemb("Assembler/Assembly/ClosestPair_machine", inst_rom);
+=======
+    $readmemb("C:/StringMatch_machine", inst_rom);
+>>>>>>> fc3487fd205de9c615ebb17a9eb7c8fdd1ddecf4
   end
 
   /*

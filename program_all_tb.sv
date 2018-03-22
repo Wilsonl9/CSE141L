@@ -12,9 +12,10 @@ module program_all_tb();
   logic signed[ 8:0] dist1,	            // program 3 distances
                      dist2;
   logic       [ 7:0] ct3;
-  int  seed  = 14;			            // change to vary "random" operands
+  int  seed  = 1776;			            // change to vary "random" operands
 //  logic[7:0] test;
   initial begin
+
 // start first multiplication
     a               =  255;//($random(seed) % 127) + 127;//5;
 	b               = 255;//($random(seed) % 127) + 127;//15;
@@ -57,7 +58,7 @@ module program_all_tb();
     $display();
 	dat_ram[6]          = pa1.dm1.guts[6];
 	for(int i=32; i<96; i++) begin  :op_ld_loop
-	  pa1.dm1.guts[i] = $random;
+	  pa1.dm1.guts[i] = $random(seed);
 	  dat_ram[i] = pa1.dm1.guts[i];
       if(dat_ram[i][3:0]==dat_ram[6] ||
          dat_ram[i][4:1]==dat_ram[6] ||
@@ -69,6 +70,12 @@ module program_all_tb();
 //           $display("bench",,,ct,,,i);      
 	     end
 	end	   : op_ld_loop
+	pa1.rf1.core[0] =  6;
+        pa1.rf1.core[1] =  32;
+        pa1.rf1.core[2] =  64;
+        pa1.rf1.core[6] =  7;
+        pa1.rf1.core[14] =  0;
+        pa1.rf1.core[15] =  1;
     #10ns reset = 1;
 	#20ns reset = 0;
 	wait(done);
@@ -79,6 +86,7 @@ module program_all_tb();
 */
     $display("program 3 -- minimum pair distance");
 	$display();
+
 // start the third program
     dist1 =   0;
     dist2 = 255;
@@ -132,13 +140,14 @@ module program_all_tb();
     wait(done);
 	$display ("prod= %d  %d",p,{pa1.pr1.data_ram[4],pa1.pr1.data_ram[5]});
     $displayh("prod=0x%h 0x%h",p,{pa1.pr1.data_ram[4],pa1.pr1.data_ram[5]});
-    $display("cycle_count = %d",pa1.pr1.cycle_ct);	 */
+    $display("cycle_count = %d",pa1.pr1.cycle_ct);	
+	*/
     $stop;	 
   end
 // irrespective of what you read in textbooks and online, this is the preferred clock syntax
   always begin
     #5ns clk = 1;
-	#5ns clk = 0;
+    #5ns clk = 0;
   end
 
 endmodule
