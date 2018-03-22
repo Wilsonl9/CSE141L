@@ -41,7 +41,6 @@ logic[7:0] temp;
 		kLDR: begin
 					acc = in_a;		        // load reg_file from data_mem
 					z = (acc == 0)? 1 : 0;
-					//neg = acc[7];
 				end
 		kAND: begin
 					acc = in_acc & in_a;  	  // AND, acc = acc & operand

@@ -29,13 +29,20 @@ OUTER_LOOP:
 		ld $r1					// load $r1 into accum acc=A[i]
 		sub $r2					// A[i] - A[j], first elem - second
 		
-		st $r10					// new
-		ld $zero
-		shl 1
-		not
-		brz TWOS_COMP
-		ld $r10
-		add $zero
+		st $r10					// store A[i] - A[j] into $r10
+		ld $zero				// load in a zero
+		shl 1					// move in the carry bit
+		brz NO_OVERFLOW				// check to see if the number overflowed if not then check if lower bits are negative
+		ld $r1					// potential overflow so check the original signs
+		xor $r2					// if both were negative then it is fine
+		shr 7					// check the negative bit
+		sub $one				// turns 1 to 0 and 0 to -1
+		brz CHECK_LOOP
+		jmp TWOS_COMP				// continues with distance calculation
+
+	NO_OVERFLOW:
+		ld $r10					// if it did not overflow check if the lower bits are negative
+		add $zero				// set the negative bit if the lower bits are negative
 
 		brneg TWOS_COMP			// dist, abs val of result
 		jmp POS_RES 			// positive result

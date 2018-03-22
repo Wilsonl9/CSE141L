@@ -16,12 +16,15 @@ module lut_pc(
 	7: dout = 8'd2; // closest pair stuff
 	8: dout = 8'd4;
 	9: dout	= 8'd9;
-	10: dout = -8'd26;
+	10: dout = -8'd31;
 	11: dout = -8'd10;
-	12: dout = -8'd46;
+	12: dout = -8'd51;
 	13: dout = 8'd8;
-	14: dout = 8'd34;
-	15: dout = 8'd5; // end closest pair vals
+	14: dout = 8'd39;
+	15: dout = 8'd7;
+	16: dout = 8'd5;
+	17: dout = 8'd3;
+	18: dout = 8'd12; // end closest pair vals
 
 /*
 	7: dout = 8'd15;

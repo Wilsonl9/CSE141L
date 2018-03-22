@@ -14,7 +14,7 @@ module pc (
   assign brel = (z && op==BRZ) || (neg && op==BRN) || (op==JMP);	 // do a relative branch iff ALU z flag is set on a BRZ instruction
   always_ff @(posedge clk) 
     if(reset)					 // resetting to start=0
-  	  PC <= (first ? 'b0 : PC);
+  	  PC <= 'b0;
   	else if (brel)               // relative branching
   	  PC <= PC + 16'(signed'(bamt));
   	else						 // normal/default operation

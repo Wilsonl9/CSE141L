@@ -7,19 +7,19 @@ module program_all_tb();
   logic[15:0] p;
   top pa1(.*);					// personalize to your design
   logic[7:0]  a, b, c;                  // program 1 mpy operands
-  logic signed[8:0] dat_ram[256];
+  logic signed[7:0] dat_ram[256];
   bit[7:0]   ct;						// program 2 where's Waldo count
   logic signed[ 8:0] dist1,	            // program 3 distances
                      dist2;
   logic       [ 7:0] ct3;
-  int  seed  = 1776;			            // change to vary "random" operands
+  int  seed  = 14;			            // change to vary "random" operands
 //  logic[7:0] test;
   initial begin
 
 // start first multiplication
-    a               =  255;//($random(seed) % 127) + 127;//5;
-	b               = 255;//($random(seed) % 127) + 127;//15;
-	c               =  200;//($random(seed) % 127) + 127;//2;
+/*    a               =  ($random(seed) % 127) + 127;//5;
+	b               = ($random(seed) % 127) + 127;//15;
+	c               =  ($random(seed) % 127) + 127;//2;
 	pa1.dm1.guts[1] =  a;           // initialize DUT data memory
 	pa1.dm1.guts[2] =  b;		    // personalize these path names
 	pa1.dm1.guts[3] =  c;			//   to your design
@@ -32,22 +32,22 @@ module program_all_tb();
         pa1.rf1.core[15] =  1;
 // compute what the product should be
 // under Verilog rules, only the lower 16 bits will be retained
-//     $display("program 1 -- multiply three 8-bit numbers");
-//     $display(); 
-// 	$display(" %d*%d*%d",a,b,c);
-// 	p = a*b*c;
-// 	#20ns reset = 0;
-//     wait(done);					        
-// // diagnostics: compare a*b*c against what the DUT computes 
-//     $display();
-// 	$display ("math prod = %d; DUT prod = %d",p,{pa1.dm1.guts[4],pa1.dm1.guts[5]});
-// 	if(p=={pa1.dm1.guts[4],pa1.dm1.guts[5]}) $display("program 1 success");
-// 	else $display("program 1 failure");
-// //    $displayh("prod=0x%h 0x%h",p,{pa1.pr1.data_ram[4],pa1.pr1.data_ram[5]});
-// //    $display();
-// //    $display("cycle_count = %d",pa1.pr1.cycle_ct);
-//     $display("\n \n");
-/*	$display("program 2 -- pattern search");
+     $display("program 1 -- multiply three 8-bit numbers");
+     $display(); 
+ 	$display(" %d*%d*%d",a,b,c);
+ 	p = a*b*c;
+ 	#20ns reset = 0;
+     wait(done);					        
+ // diagnostics: compare a*b*c against what the DUT computes 
+     $display();
+ 	$display ("math prod = %d; DUT prod = %d",p,{pa1.dm1.guts[4],pa1.dm1.guts[5]});
+ 	if(p=={pa1.dm1.guts[4],pa1.dm1.guts[5]}) $display("program 1 success");
+ 	else $display("program 1 failure");
+ //    $displayh("prod=0x%h 0x%h",p,{pa1.pr1.data_ram[4],pa1.pr1.data_ram[5]});
+ //    $display();
+ //    $display("cycle_count = %d",pa1.pr1.cycle_ct);
+     $display("\n \n");
+	$display("program 2 -- pattern search");
     $display();
     #10ns;
 // now start the first "where's Waldo?" pattern search     
@@ -83,10 +83,10 @@ module program_all_tb();
 	if(ct==pa1.dm1.guts[7]) $display("program 2 success");
 	else $display("program 2 failure");
     $display("\n \n");
-*/
+
     $display("program 3 -- minimum pair distance");
 	$display();
-
+*/
 // start the third program
     dist1 =   0;
     dist2 = 255;
@@ -96,10 +96,10 @@ module program_all_tb();
 //	test   = $random(seed);
 //	$display("test = %d",test);
    	
-   //  for(int i=128;i<148;i++) begin
-	  // dat_ram[i]        =  $random(seed);           // feel free to vary seed
-	  for(int i=128; i<148; i++) begin
-    dat_ram[i] = (i-128)*13 - 128;
+     for(int i=128;i<148;i++) begin
+	   dat_ram[i]        =  $random(seed);           // feel free to vary seed
+/*     for(int i=128; i<148; i++) begin
+        dat_ram[i] = (i-128)*13 - 128;*/
 
     pa1.dm1.guts[i] =  dat_ram[i];
 //	  $display(i,,dat_ram[i]);

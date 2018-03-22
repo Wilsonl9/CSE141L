@@ -34,13 +34,15 @@ st $r2							// stores the third operand
 ld $zero						// clears the accumulator
 st $r3							// sets low bits of intermediate answer to 0
 st $r4							// sets high bits of intermediate answer to 0
+st $r5							// sets low bits of answer to 0
+st $r6							// sets high bits of answer to 0
 
 FIRST_MULTIPLY:
 	ld $r1					// loads the first operand
 	brz FIRST_MULTIPLY_END			// breaks out of loop if the first operand is 0
 	sub $one					// decrement the first operand
 	st $r1					// save the decrement change
-ld $r3							// loads the low bits of intermediate answer
+	ld $r3					// loads the low bits of intermediate answer
 	add $r0					// adds the first operand to the sum
 	st $r3					// store the low bits of intermediate answer
 	ld $r4					// loads the high bits of intermediate answer
@@ -60,9 +62,10 @@ LOWER_BITS_ARE_ZERO:
 	sub $one					// decrement the high bits of intermediate
 	st $r4						// store the high bits of intermediate
 	ld $r3						// load the low bits of intermediate which is 0
-	not						// turn the low bits of intermediate all to 1s
+//	not						// turn the low bits of intermediate all to 1s
 LOWER_BITS_ARE_ZERO_END:
 	sub $one					// decrement the low bits of intermediate
+	clr						// clear the alu flags
 	st $r3						// store the low bits of intermediate answer
 	ld $r5						// loads the low bits of answer
 	add $r2					// adds the third operand to the sum
