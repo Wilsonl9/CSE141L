@@ -1,5 +1,13 @@
 proc StringMatch:
 
+	ldi 6					// load immediate 6 into the accumulator
+	st $r0					// stores 6 into r0
+	ldi 32					// load immediate 32 into the accumulator
+	st $r1					// stores 6 into r1
+	ldi 64					// load immediate 64 into the accumulator
+	st $r2					// stores 6 into r2
+	ldi 7					// load immediate 7 into the accumulator
+	st $r6					// stores 6 into r6
 	memld $r0				// load mem loc 6
 	st $r8					// store into r8
 	ldi 0 					// counter

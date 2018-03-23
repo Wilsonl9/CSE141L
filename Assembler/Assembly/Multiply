@@ -25,17 +25,27 @@
 
 proc mult:
 
-memld $r7 					// Load A into r0
-st $r0							// stores the first operand
-memld $r8					// Load B into r1
-st $r1							// stores the second operand
-memld $r9					// Load C into r2
-st $r2							// stores the third operand
 ld $zero						// clears the accumulator
 st $r3							// sets low bits of intermediate answer to 0
 st $r4							// sets high bits of intermediate answer to 0
 st $r5							// sets low bits of answer to 0
 st $r6							// sets high bits of answer to 0
+add $one					// Increment the accumulator to 1
+st $r7
+add $one					// Increment the accumulator to 2
+st $r8
+add $one					// Increment the accumulator to 3
+st $r9
+add $one					// Increment the accumulator to 4
+st $r10
+add $one					// Increment the accumulator to 5
+st $r11
+memld $r7 					// Load A into r0
+st $r0							// stores the first operand
+memld $r8					// Load B into r1
+st $r1							// stores the second operand
+memld $r9					// Load B into r1
+st $r2							// stores the second operand
 
 FIRST_MULTIPLY:
 	ld $r1					// loads the first operand
@@ -43,6 +53,7 @@ FIRST_MULTIPLY:
 	sub $one					// decrement the first operand
 	st $r1					// save the decrement change
 	ld $r3					// loads the low bits of intermediate answer
+	clr					// clears the flag bits from the subtraction
 	add $r0					// adds the first operand to the sum
 	st $r3					// store the low bits of intermediate answer
 	ld $r4					// loads the high bits of intermediate answer

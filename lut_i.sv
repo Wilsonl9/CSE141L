@@ -11,9 +11,15 @@ always_comb case (ptr_i)
 	0: dm_i = 8'd14;	        // demo will load from mem_adr 3 and 4
 	1: dm_i = 8'd20;
 	2: dm_i = 8'd127;
+
+        // String Macthing
 	3: dm_i = 8'd0;
 	4: dm_i = 8'd15;
 	5: dm_i = 8'd5;
+	6: dm_i = 8'd6;
+	7: dm_i = 8'd32;
+	8: dm_i = 8'd64;
+	9: dm_i = 8'd7;
   default: dm_i = 8'd0;
   /*5'b00: dm_i = 3;	        // demo will load from mem_adr 3 and 4
   5'b01: dm_i = 4;

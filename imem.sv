@@ -11,7 +11,7 @@ module imem(
  //load machine code program into instruction ROM
   initial 
   begin
-    $readmemb("C:/Users/Wilson/Google Drive/Laptop/Documents/School/CSE141L/CSE141L/Assembler/Assembly/ClosestPair_machine", inst_rom);
+    $readmemb("C:/Users/Wilson/Google Drive/Laptop/Documents/School/CSE141L/CSE141L/Assembler/Assembly/All_machine", inst_rom);
   end
 
   /*

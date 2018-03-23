@@ -12,22 +12,17 @@ module program_all_tb();
   logic signed[ 8:0] dist1,	            // program 3 distances
                      dist2;
   logic       [ 7:0] ct3;
-  int  seed  = 14;			            // change to vary "random" operands
+  int  seed  = 17;//14;			            // change to vary "random" operands
 //  logic[7:0] test;
   initial begin
 
 // start first multiplication
-/*    a               =  ($random(seed) % 127) + 127;//5;
+    a               =  ($random(seed) % 127) + 127;//5;
 	b               = ($random(seed) % 127) + 127;//15;
 	c               =  ($random(seed) % 127) + 127;//2;
 	pa1.dm1.guts[1] =  a;           // initialize DUT data memory
 	pa1.dm1.guts[2] =  b;		    // personalize these path names
 	pa1.dm1.guts[3] =  c;			//   to your design
-        pa1.rf1.core[7] =  1;
-        pa1.rf1.core[8] =  2;
-        pa1.rf1.core[9] =  3;
-        pa1.rf1.core[10] =  4;
-        pa1.rf1.core[11] =  5;
         pa1.rf1.core[14] =  0;
         pa1.rf1.core[15] =  1;
 // compute what the product should be
@@ -36,7 +31,7 @@ module program_all_tb();
      $display(); 
  	$display(" %d*%d*%d",a,b,c);
  	p = a*b*c;
- 	#20ns reset = 0;
+/* 	#20ns reset = 0;
      wait(done);					        
  // diagnostics: compare a*b*c against what the DUT computes 
      $display();
@@ -45,15 +40,13 @@ module program_all_tb();
  	else $display("program 1 failure");
  //    $displayh("prod=0x%h 0x%h",p,{pa1.pr1.data_ram[4],pa1.pr1.data_ram[5]});
  //    $display();
- //    $display("cycle_count = %d",pa1.pr1.cycle_ct);
+ //    $display("cycle_count = %d",pa1.pr1.cycle_ct);*/
      $display("\n \n");
 	$display("program 2 -- pattern search");
     $display();
-    #10ns;
+/*    #10ns;*/
 // now start the first "where's Waldo?" pattern search     
 	pa1.dm1.guts[6] = 4'b1101;     // Waldo himself :)
-        pa1.rf1.core[14] =  0;
-        pa1.rf1.core[15] =  1;
     $display("pattern = %b",pa1.dm1.guts[6][3:0]);
     $display();
 	dat_ram[6]          = pa1.dm1.guts[6];
@@ -70,29 +63,21 @@ module program_all_tb();
 //           $display("bench",,,ct,,,i);      
 	     end
 	end	   : op_ld_loop
-	pa1.rf1.core[0] =  6;
-        pa1.rf1.core[1] =  32;
-        pa1.rf1.core[2] =  64;
-        pa1.rf1.core[6] =  7;
-        pa1.rf1.core[14] =  0;
-        pa1.rf1.core[15] =  1;
-    #10ns reset = 1;
+/*    #10ns reset = 1;
 	#20ns reset = 0;
 	wait(done);
 	$display("math match count = %d; DUT count = %d",ct,pa1.dm1.guts[7]);
 	if(ct==pa1.dm1.guts[7]) $display("program 2 success");
-	else $display("program 2 failure");
+	else $display("program 2 failure");*/
     $display("\n \n");
 
     $display("program 3 -- minimum pair distance");
 	$display();
-*/
+
 // start the third program
     dist1 =   0;
     dist2 = 255;
     ct3   =   0;
-    pa1.rf1.core[14] =  0;
-	pa1.rf1.core[15] =  1;
 //	test   = $random(seed);
 //	$display("test = %d",test);
    	
@@ -117,14 +102,47 @@ module program_all_tb();
 		end
 //           $display("bench",,,ct,,,i);      
 	  end
-	#10ns reset = 1;
+/*	#10ns reset = 1;
     #20ns reset = 0;
 	wait(done);
 	#20ns $display("math dist = %d, DUT dist = %d",dist2,pa1.dm1.guts[127]);
     if(dist2==pa1.dm1.guts[127]) $display("program 3 success");
 	else $display("program 3 failure");
 	$display("\n \n");
+    #10ns;*/
+
+    #10ns reset = 1;		                            // launch series of 3 programs
+        #20ns reset = 0;
+	wait(done);										// DUT has finished all 3
+// now display results from all 3 programs in sucession
+    $display("\n \n");
+    $display("program 1 -- multiply three 8-bit numbers");
+    $display();							            // display results of mpy
+// display results of first program
+	$display ("math prod = %d; DUT prod = %d",p,{pa1.dm1.guts[4],pa1.dm1.guts[5]});
+	if(p=={pa1.dm1.guts[4],pa1.dm1.guts[5]}) $display("program 1 success");
+	else $display("program 1 failure");
+//    $displayh("prod=0x%h 0x%h",p,{pa1.pr1.data_ram[4],pa1.pr1.data_ram[5]});
+//    $display();
+//    $display("cycle_count = %d",pa1.pr1.cycle_ct);
+    $display("\n \n");
+	$display("program 2 -- pattern search");
+    $display();
     #10ns;
+// dispaly results of second program
+	$display("math match count = %d; DUT count = %d",ct,pa1.dm1.guts[7]);
+	if(ct==pa1.dm1.guts[7]) $display("program 2 success");
+	else $display("program 2 failure");
+    $display("\n \n");
+    $display("program 3 -- minimum pair distance");
+	$display();
+// display results of third program
+	#20ns $display("math dist = %d, DUT dist = %d",dist2,pa1.dm1.guts[127]);
+    if(dist2==pa1.dm1.guts[127]) $display("program 3 success");
+	else $display("program 3 failure");
+	$display("\n \n");
+    #10ns;
+
 /*
 // start a second round of problems -- we can/should randomize in future runs
 	a = 12;
